@@ -13,7 +13,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: !Sub CosmosApiGateway
-      StageName: StageName
+      StageName: dev
       OpenApiVersion: 3.0.0
       Cors:
         AllowMethods: "'GET, POST, PUT, DELETE, OPTIONS'"
