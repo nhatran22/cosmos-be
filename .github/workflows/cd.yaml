@@ -2,7 +2,7 @@ name: Continuous Deployment
 
 on:
   workflow_call:
-    with:
+    inputs:
       AWS_REGION:
         type: string
         required: true
