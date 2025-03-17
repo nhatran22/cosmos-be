@@ -1,0 +1,19 @@
+name: Main control CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yaml
+
+  cd:
+    needs: [ci]
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/cd.yaml
+    with:
+      AWS_REGION: ap-southeast-1
+    secrets: inherit

@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: App Cloudformation
+
+Resources:
+  LogGroupAdminApiGateway:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/Admin
+
+  AdminApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub AdminApiGateway
+      StageName: StageName
+      OpenApiVersion: 3.0.0
+      Cors:
+        AllowMethods: "'GET, POST, PUT, DELETE, OPTIONS'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./swagger.yaml
+        Auth:
+          AddDefaultAuthorizerToCorsPreflight: true
+          AccessLogSetting:
+            DestinationArn: !GetAtt LogGroupAdminApiGateway.Arn
+            Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength", "user-agent":"$context.identity.userAgent"}'
+
+  DynamoDB:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./dynamodb.yaml
+
+  LambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: nodejs.zip
+      CompatibleRuntimes:
+        - nodejs16.x
+        - nodejs18.x
+      RetentionPolicy: Delete
+      CompatibleArchitectures:
+        - x86_64
+
+  AdminRole:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./role.yaml
+
+  AdminFunctions:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./function.yaml
+      Parameters:
+        LambdaLayerArn: !Ref LambdaLayer
+        GetProfileRoleArn: !GetAtt AdminRole.Outputs.GetProfileRoleArn
+
+  AdminPermissions:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./permission.yaml
+      Parameters:
+        AdminApiGateway: !Ref AdminApiGateway
+        GetProfileFunctionArn: !GetAtt AdminFunctions.Outputs.GetProfileFunctionArn
+
+Outputs:
+  AdminApiGatewayUrl:
+    Value: !Sub ${AdminApiGateway}.execute-api.${AWS::Region}.amazonaws.com/

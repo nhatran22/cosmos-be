@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: Cosmos System
+  version: 0.0.1
+
+tags:
+  - name: Profile
+    description: Everything about logged-in user
+
+paths:
+  /profile:
+    get:
+      tags:
+        - Profile
+      summary: Get Profile
+      description: Get logged-in profile
+      operationId: GetProfileFunction
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAccount"
+        "400":
+          description: Error operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticationError"
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        passthroughBehavior: when_no_templates
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AdminFunctions.Outputs.GetProfileFunctionArn}/invocations
+
+components:
+  schemas:
+
+    AdminAccount:
+      type: object
+      properties:
+        adminAccountUID:
+          type: string
+          description: Admin Account UID
+        email:
+          type: string
+          description: Email
+        accountRole:
+          type: integer
+          description: |
+            Account role: \
+            `0`: ADMIN \
+            `1`: STAFF
+        isDeactivated:
+          type: boolean
+          description: |
+            Is deactivated flag \
+        profile:
+          $ref: "#/components/schemas/Profile"
+
+    Profile:
+      type: object
+      properties:
+        fullName:
+          type: string
+          description: Full name
+        phoneNumber:
+          type: string
+          description: Phone number
+
+    # Success Schemas
+    Success:
+      description: Success
+      type: object
+      properties:
+        message:
+          type: string
+          example: success
+
+    # End Success Schemas
+
+    # Error Schemas
+    ParameterError:
+      description: Paramter error
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          example: 10
+        errorMessage:
+          type: string
+          example: Parameter error
+
+    WrongUsernamePassword:
+      description: Username or Password is wrong
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          example: 20
+        errorMessage:
+          type: string
+          example: Username or Password is wrong
+
+    InternalError:
+      description: Internal error
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          example: 901
+        errorMessage:
+          type: string
+          example: Internal error
+    # End Error Schemas
+
+    ExclusiveStartKey:
+      in: query
+      name: exclusiveStartKey
+      schema:
+        type: string
+        description: Exclusive start key
+
+    AdminAccountUID:
+      in: path
+      name: adminAccountUID
+      schema:
+        type: string
+        description: Admin Account UID
+      required: true
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header

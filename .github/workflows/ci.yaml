@@ -1,0 +1,21 @@
+name: Continuous Integration
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: NPM install modules
+        run: npm install
+      - name: ESlint code
+        run: npm run lint

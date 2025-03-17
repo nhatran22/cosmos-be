@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "cosmos-be"
+s3_bucket = ""
+s3_prefix = "cosmos-be"
+region = "ap-southeast-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM"
+image_repositories = []

@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Functions Cloudformation
+
+Parameters:
+  GetProfileRoleArn:
+    Type: String
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs16.x
+    Handler: index.handler
+    Layers:
+      - !Ref LambdaLayerArn
+    Environment:
+      Variables:
+        ADMIN_ACCOUNTS_TABLE_NAME: AdminAccounts
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+Resources:
+  GetProfileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetProfileFunction
+      CodeUri: ../dist/GetProfile/
+      Role: !Ref GetProfileRoleArn
+
+Outputs:
+  GetProfileFunctionArn:
+    Value: !GetAtt GetProfileFunction.Arn
