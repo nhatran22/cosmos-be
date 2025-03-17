@@ -9,8 +9,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         description: "AWS SECRET ACCESS KEY"
         required: true
-      AWS_REGION:
-        required: true
 
 jobs:
   deploy:
