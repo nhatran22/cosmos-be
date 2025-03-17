@@ -8,71 +8,64 @@ tags:
     description: Everything about logged-in user
 
 paths:
-  /profile:
+  /site-config:
     get:
       tags:
-        - Profile
-      summary: Get Profile
-      description: Get logged-in profile
-      operationId: GetProfileFunction
-      security:
-        - api_key: []
+        - Auth
+      operationId: GetSiteConfigFunction
+      summary: Get site config
+      description: Get site config information
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AdminAccount"
+                type: object
+                properties:
+                  siteName:
+                    type: string
+                    description: Site name
+                  siteInformation:
+                    type: object
+                    description: Site information detail
+                    properties:
+                      description:
+                        type: string
+                        description: Site description
+                      address:
+                        type: string
+                        description: Site address
+                      telephone:
+                        type: string
+                        description: Site telephone
+                      email:
+                        type: string
+                        description: Site email
+                  siteSocialMedia:
+                    type: object
+                    description: Site social media
+                    properties:
+                      facebook:
+                        type: string
+                        description: Facebook social link
         "400":
           description: Error operation
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/AuthenticationError"
+                  - $ref: "#/components/schemas/ParameterError"
+                  - $ref: "#/components/schemas/InternalError"
       x-amazon-apigateway-integration:
         type: aws_proxy
         httpMethod: POST
         passthroughBehavior: when_no_templates
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AdminFunctions.Outputs.GetProfileFunctionArn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunction.Outputs.GetSiteConfigFunctionArn}/invocations
 
 components:
   schemas:
-
-    AdminAccount:
-      type: object
-      properties:
-        adminAccountUID:
-          type: string
-          description: Admin Account UID
-        email:
-          type: string
-          description: Email
-        accountRole:
-          type: integer
-          description: |
-            Account role: \
-            `0`: ADMIN \
-            `1`: STAFF
-        isDeactivated:
-          type: boolean
-          description: |
-            Is deactivated flag \
-        profile:
-          $ref: "#/components/schemas/Profile"
-
-    Profile:
-      type: object
-      properties:
-        fullName:
-          type: string
-          description: Full name
-        phoneNumber:
-          type: string
-          description: Phone number
-
     # Success Schemas
     Success:
       description: Success
@@ -125,14 +118,6 @@ components:
       schema:
         type: string
         description: Exclusive start key
-
-    AdminAccountUID:
-      in: path
-      name: adminAccountUID
-      schema:
-        type: string
-        description: Admin Account UID
-      required: true
 
   securitySchemes:
     api_key:

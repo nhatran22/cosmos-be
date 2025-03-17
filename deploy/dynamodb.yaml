@@ -3,23 +3,14 @@ Transform: AWS::Serverless-2016-10-31
 Description: DynamoDB Table
 
 Resources:
-  AdminAccountsTable:
+  SiteConfigTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: AdminAccounts
+      TableName: SiteConfig
       AttributeDefinitions:
-        - AttributeName: adminAccountUID
-          AttributeType: S
-        - AttributeName: email
+        - AttributeName: code
           AttributeType: S
       KeySchema:
-        - AttributeName: adminAccountUID
+        - AttributeName: code
           KeyType: HASH
-      GlobalSecondaryIndexes:
-        - IndexName: email-index
-          KeySchema:
-            - AttributeName: email
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
       BillingMode: PAY_PER_REQUEST

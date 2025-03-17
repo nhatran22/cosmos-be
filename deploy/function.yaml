@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: Functions Cloudformation
 
 Parameters:
-  GetProfileRoleArn:
+  GetSiteConfigRoleArn:
     Type: String
 
 Globals:
@@ -15,17 +15,19 @@ Globals:
       - !Ref LambdaLayerArn
     Environment:
       Variables:
-        ADMIN_ACCOUNTS_TABLE_NAME: AdminAccounts
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
 
 Resources:
-  GetProfileFunction:
+  GetSiteConfigFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: GetProfileFunction
-      CodeUri: ../dist/GetProfile/
-      Role: !Ref GetProfileRoleArn
+      FunctionName: GetSiteConfigFunction
+      CodeUri: ../dist/GetSiteConfig/
+      Role: !Ref GetSiteConfigRoleArn
+      Environment:
+        Variables:
+          SITE_CONFIG_TABLE_NAME: SiteConfig
 
 Outputs:
-  GetProfileFunctionArn:
-    Value: !GetAtt GetProfileFunction.Arn
+  GetSiteConfigFunctionArn:
+    Value: !GetAtt GetSiteConfigFunction.Arn
