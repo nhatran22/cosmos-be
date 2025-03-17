@@ -36,47 +36,30 @@ function createLambdaFolder() {
 
 function generateMainSource() {
   const data = `import { middlewareHandler } from "../../middleware/handler";
-import { APIEvent, LambdaSettings } from "../../middleware/interface";
-import AdminAccountsRepository from "../../repository/admin-accounts";
+import SiteConfigRepository from "../../repository/site-config.repository";
 import {
-  RequestParams,
   requestParamsValidate,
   ResponsePayload,
   responsePayloadSchema,
 } from "./interface";
 
-const lambdaSettings: LambdaSettings = {
-  IS_REQUIRE_AUTHENTICATION: false,
-  ROLE_REQUIRE: [],
-};
-const AdminAccounts = new AdminAccountsRepository();
+// Repository
+const siteConfigRepository = new SiteConfigRepository();
 
-const ${functionName} = async (
-  event: APIEvent<RequestParams>
-): Promise<ResponsePayload> => {
+// Function
+const ${functionName} = async (): Promise<ResponsePayload> => {
   return (async () => main())();
 
-  async function main() {
-    const params = extractParams();
-    return params.loggedAccount;
-  }
-
-  function extractParams(): RequestParams {
-    const pathParameters = event.pathParameters;
-    const body = event.body;
-    const loggedAccount = event.loggedAccount;
-
+  async function main(): Promise<ResponsePayload> {
+    const siteConfig = await siteConfigRepository.scanAll();
     return {
-      pathParameters,
-      body,
-      loggedAccount,
+      config: siteConfig,
     };
   }
 };
 
 export const handler = middlewareHandler({
   handler: ${functionName},
-  lambdaSettings,
   requestParamsValidate,
   responsePayloadSchema,
 });
@@ -86,29 +69,13 @@ export const handler = middlewareHandler({
 
 function generateInterface() {
   const data = `import { RequestParamsValidate } from "../../middleware/interface";
-import {
-  AdminAccountsModel,
-  adminAccountsSchema,
-} from "../../repository/admin-accounts";
+import { SiteConfigSchema } from "../../schema/site-config.schema";
 import { Static, Type } from "@sinclair/typebox";
 
-const requestPathParametersValidate = Type.Pick(adminAccountsSchema, [
-  "adminAccountUID",
-]);
-const requestBodyValidate = Type.Pick(adminAccountsSchema, ["adminAccountUID"]);
-export const requestParamsValidate: RequestParamsValidate = {
-  pathParameters: requestPathParametersValidate,
-  body: requestBodyValidate,
-};
-
-export interface RequestParams {
-  pathParameters: Static<typeof requestPathParametersValidate>;
-  body: Static<typeof requestBodyValidate>;
-  loggedAccount: AdminAccountsModel;
-}
+export const requestParamsValidate: RequestParamsValidate = {};
 
 export const responsePayloadSchema = Type.Object({
-  adminAccountUID: Type.String(),
+  config: Type.Array(SiteConfigSchema),
 });
 export type ResponsePayload = Static<typeof responsePayloadSchema>;
 `;
@@ -147,7 +114,7 @@ function addFunctionResources(cloudformation: Document.Parsed<ParsedNode>) {
         Role: createRefValue(`${functionName}RoleArn`),
         Environment: {
           Variables: {
-            ADMIN_ACCOUNTS_TABLE_NAME: "AdminAccounts",
+            SITE_CONFIG_TABLE_NAME: "SiteConfig",
           },
         },
       },
@@ -193,7 +160,7 @@ function addPermissionResources(cloudformation: Document.Parsed<ParsedNode>) {
         Action: "lambda:InvokeFunction",
         Principal: "apigateway.amazonaws.com",
         SourceArn: createSubValue(
-          `arn:aws:execute-api:\${AWS::Region}:\${AWS::AccountId}:\${AdminApiGateway}/*/${method}${url.replaceAll(
+          `arn:aws:execute-api:\${AWS::Region}:\${AWS::AccountId}:\${CosmosApiGateway}/*/${method}${url.replaceAll(
             /{.[^/]*}/g,
             "*"
           )}`
@@ -245,7 +212,7 @@ function addRoleResources(cloudformation: Document.Parsed<ParsedNode>) {
                   Action: ["dynamodb:GetItem"],
                   Resource: [
                     createSubValue(
-                      `arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/AdminAccounts`
+                      `arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/SiteConfig`
                     ),
                   ],
                 },
@@ -277,21 +244,21 @@ function updateCloudFormationMain() {
 
 function addMainFunctions(cloudformation: Document.Parsed<ParsedNode>) {
   cloudformation.addIn(
-    ["Resources", "AdminFunctions", "Properties", "Parameters"],
+    ["Resources", "CosmosFunctions", "Properties", "Parameters"],
     {
       key: `${functionName}RoleArn`,
-      value: createGetAttValue(`AdminRole.Outputs.${functionName}RoleArn`),
+      value: createGetAttValue(`CosmosRole.Outputs.${functionName}RoleArn`),
     }
   );
 }
 
 function addMainPermissions(cloudformation: Document.Parsed<ParsedNode>) {
   cloudformation.addIn(
-    ["Resources", "AdminPermissions", "Properties", "Parameters"],
+    ["Resources", "CosmosPermissions", "Properties", "Parameters"],
     {
       key: `${functionName}FunctionArn`,
       value: createGetAttValue(
-        `AdminFunctions.Outputs.${functionName}FunctionArn`
+        `CosmosFunctions.Outputs.${functionName}FunctionArn`
       ),
     }
   );
@@ -362,7 +329,7 @@ function updateSwaggerInfo(swagger: Document.Parsed<ParsedNode>) {
       httpMethod: "POST",
       passthroughBehavior: "when_no_templates",
       uri: {
-        "Fn::Sub": `arn:aws:apigateway:\${AWS::Region}:lambda:path/2015-03-31/functions/\${AdminFunctions.Outputs.${functionName}FunctionArn}/invocations`,
+        "Fn::Sub": `arn:aws:apigateway:\${AWS::Region}:lambda:path/2015-03-31/functions/\${CosmosFunctions.Outputs.${functionName}FunctionArn}/invocations`,
       },
     },
   };
