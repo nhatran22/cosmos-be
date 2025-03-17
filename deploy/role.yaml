@@ -3,12 +3,12 @@ Transform: AWS::Serverless-2016-10-31
 Description: Roles Cloudformation
 
 Resources:
-  GetProfileRole:
+  GetSiteConfigRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: GetProfileRole
+      RoleName: GetSiteConfigRole
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal:
@@ -21,14 +21,14 @@ Resources:
       Policies:
         - PolicyName: DynamoDBPolicy
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/AdminAccounts"
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SiteConfig
 
 Outputs:
-  GetProfileRoleArn:
-    Value: !GetAtt GetProfileRole.Arn
-
+  GetSiteConfigRoleArn:
+    Value: !GetAtt GetSiteConfigRole.Arn

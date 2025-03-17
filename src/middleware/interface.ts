@@ -1,4 +1,3 @@
-import { AdminAccountsModel } from "../repository/admin-accounts";
 import {
   RequestParamsType,
   RequestTypeGenericInterface,
@@ -14,7 +13,6 @@ export type APIEvent<
   APIGatewayProxyEvent,
   "body" | "queryStringParameters" | "headers" | "pathParameters"
 > & {
-  loggedAccount: AdminAccountsModel;
   body: RequestParamsGeneric["body"];
   queryStringParameters: RequestParamsGeneric["queryStringParameters"];
   pathParameters: RequestParamsGeneric["pathParameters"];
@@ -25,7 +23,7 @@ export type APIResult = APIGatewayProxyResult;
 
 export interface middlewareOptions {
   handler: any; // eslint-disable-line
-  lambdaSettings: LambdaSettings;
+  lambdaSettings?: LambdaSettings;
   requestParamsValidate?: RequestParamsValidate;
   responsePayloadSchema?: SchemaObject;
 }
@@ -41,5 +39,3 @@ export interface LambdaSettings {
   // IS_REQUIRE_AUTHENTICATION: boolean;
   // ROLE_REQUIRE: number[];
 }
-
-export type JWTInfo = Pick<AdminAccountsModel, "adminAccountUID">;

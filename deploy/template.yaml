@@ -4,15 +4,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: App Cloudformation
 
 Resources:
-  LogGroupAdminApiGateway:
+  LogGroupCosmosApiGateway:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/apigateway/Admin
+      LogGroupName: !Sub /aws/apigateway/Cosmos
 
-  AdminApiGateway:
+  CosmosApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub AdminApiGateway
+      Name: !Sub CosmosApiGateway
       StageName: StageName
       OpenApiVersion: 3.0.0
       Cors:
@@ -27,7 +27,7 @@ Resources:
         Auth:
           AddDefaultAuthorizerToCorsPreflight: true
           AccessLogSetting:
-            DestinationArn: !GetAtt LogGroupAdminApiGateway.Arn
+            DestinationArn: !GetAtt LogGroupCosmosApiGateway.Arn
             Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength", "user-agent":"$context.identity.userAgent"}'
 
   DynamoDB:
@@ -46,27 +46,27 @@ Resources:
       CompatibleArchitectures:
         - x86_64
 
-  AdminRole:
+  CosmosRole:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./role.yaml
 
-  AdminFunctions:
+  CosmosFunctions:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./function.yaml
       Parameters:
         LambdaLayerArn: !Ref LambdaLayer
-        GetProfileRoleArn: !GetAtt AdminRole.Outputs.GetProfileRoleArn
+        GetSiteConfigRoleArn: !GetAtt CosmosRole.Outputs.GetSiteConfigRoleArn
 
-  AdminPermissions:
+  CosmosPermissions:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./permission.yaml
       Parameters:
-        AdminApiGateway: !Ref AdminApiGateway
-        GetProfileFunctionArn: !GetAtt AdminFunctions.Outputs.GetProfileFunctionArn
+        CosmosApiGateway: !Ref CosmosApiGateway
+        GetSiteConfigFunctionArn: !GetAtt CosmosFunctions.Outputs.GetSiteConfigFunctionArn
 
 Outputs:
-  AdminApiGatewayUrl:
-    Value: !Sub ${AdminApiGateway}.execute-api.${AWS::Region}.amazonaws.com/
+  CosmosApiGatewayUrl:
+    Value: !Sub ${CosmosApiGateway}.execute-api.${AWS::Region}.amazonaws.com/
