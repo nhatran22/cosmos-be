@@ -3,13 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: Functions Cloudformation
 
 Parameters:
+  LambdaLayerArn:
+    Type: String
   GetSiteConfigRoleArn:
     Type: String
 
 Globals:
   Function:
     Timeout: 30
-    Runtime: nodejs16.x
+    Runtime: nodejs18.x
     Handler: index.handler
     Layers:
       - !Ref LambdaLayerArn

@@ -40,7 +40,6 @@ Resources:
     Properties:
       ContentUri: nodejs.zip
       CompatibleRuntimes:
-        - nodejs16.x
         - nodejs18.x
       RetentionPolicy: Delete
       CompatibleArchitectures:
