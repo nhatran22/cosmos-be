@@ -7,14 +7,6 @@ on:
         type: string
         required: true
 
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: "AWS ACCESS KEY"
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: "AWS SECRET ACCESS KEY"
-        required: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
