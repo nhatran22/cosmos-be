@@ -2,17 +2,16 @@ name: Continuous Deployment
 
 on:
   workflow_call:
-    inputs:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: "AWS ACCESS KEY"
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: "AWS SECRET ACCESS KEY"
+        required: true
       AWS_REGION:
         required: true
         type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS ACCESS KEY'
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS SECRET ACCESS KEY'
-        required: true
 
 jobs:
   deploy:
@@ -32,7 +31,7 @@ jobs:
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@v1
-        secrets:
+        with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.AWS_REGION }}
