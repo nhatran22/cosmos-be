@@ -1,6 +1,6 @@
 import { program } from "commander";
 import fs from "fs";
-import { toUpper, upperFirst } from "lodash";
+import lodash from "lodash";
 import { Document, ParsedNode, Scalar, parseDocument, stringify } from "yaml";
 
 program.name("Generate API").description("CLI Generate API").version("1.0.0");
@@ -12,8 +12,8 @@ program
   )
   .requiredOption("-u, --url [url]", "API url.");
 program.parse(process.argv);
-const functionName = upperFirst(program.opts().functionName);
-const method = toUpper(program.opts().method);
+const functionName = lodash.upperFirst(program.opts().functionName);
+const method = lodash.toUpper(program.opts().method);
 const url = String(program.opts().url);
 if (!/^\/.*/.test(url)) {
   throw "Error: Invalid url";
