@@ -3,16 +3,16 @@ Transform: AWS::Serverless-2016-10-31
 Description: Cloudformation
 
 Parameters:
-  AdminApiGateway:
+  CosmosApiGateway:
     Type: String
-  GetProfileFunctionArn:
+  GetSiteConfigFunctionArn:
     Type: String
 
 Resources:
-  GetProfileFunctionPermission:
+  GetSiteConfigPermission:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !Ref GetProfileFunctionArn
+      FunctionName: !Ref GetSiteConfigFunctionArn
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AdminApiGateway}/*/GET/profile
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CosmosApiGateway}/*/GET/site-config
