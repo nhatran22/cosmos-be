@@ -20,6 +20,7 @@ Globals:
     Environment:
       Variables:
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+        BUCKET_REGION: ap-southeast-1
 
 Resources:
   GetSiteConfigFunction:
