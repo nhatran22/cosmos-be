@@ -7,6 +7,8 @@ Parameters:
     Type: String
   GetSiteConfigRoleArn:
     Type: String
+  GetCategoriesRoleArn:
+    Type: String
 
 Globals:
   Function:
@@ -30,6 +32,19 @@ Resources:
         Variables:
           SITE_CONFIG_TABLE_NAME: SiteConfig
 
+  GetCategoriesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetCategoriesFunction
+      CodeUri: ../dist/GetCategories/
+      Role: !Ref GetCategoriesRoleArn
+      Environment:
+        Variables:
+          CATEGORY_TABLE_NAME: Category
+          COSMOS_SYSTEM_IMAGES_BUCKET_NAME: cosmos-system-images
+
 Outputs:
   GetSiteConfigFunctionArn:
     Value: !GetAtt GetSiteConfigFunction.Arn
+  GetCategoriesFunctionArn:
+    Value: !GetAtt GetCategoriesFunction.Arn
