@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { S3_BUCKET_NAME } from "../../constants/s3-bucket.constant";
+import { S3_BUCKET } from "../../constants/s3-bucket.constant";
 import { middlewareHandler } from "../../middleware/handler";
 import CategoryRepository from "../../repository/category.repository";
 import { CategoryModel, SubCategoryModel } from "../../schema/category.schema";
@@ -32,7 +32,7 @@ const GetCategories = async (): Promise<ResponsePayload> => {
     for (const category of categories) {
       if (category.image) {
         category.image = await s3Service.getDownloadSignedUrl(
-          S3_BUCKET_NAME.IMAGE_BUCKET,
+          S3_BUCKET.IMAGE_BUCKET,
           category.image
         );
       }
