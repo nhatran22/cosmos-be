@@ -58,6 +58,7 @@ Resources:
       Parameters:
         LambdaLayerArn: !Ref LambdaLayer
         GetSiteConfigRoleArn: !GetAtt CosmosRole.Outputs.GetSiteConfigRoleArn
+        GetCategoriesRoleArn: !GetAtt CosmosRole.Outputs.GetCategoriesRoleArn
 
   CosmosPermissions:
     Type: AWS::Serverless::Application
@@ -66,6 +67,7 @@ Resources:
       Parameters:
         CosmosApiGateway: !Ref CosmosApiGateway
         GetSiteConfigFunctionArn: !GetAtt CosmosFunctions.Outputs.GetSiteConfigFunctionArn
+        GetCategoriesFunctionArn: !GetAtt CosmosFunctions.Outputs.GetCategoriesFunctionArn
 
 Outputs:
   CosmosApiGatewayUrl:

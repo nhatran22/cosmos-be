@@ -7,6 +7,8 @@ Parameters:
     Type: String
   GetSiteConfigFunctionArn:
     Type: String
+  GetCategoriesFunctionArn:
+    Type: String
 
 Resources:
   GetSiteConfigPermission:
@@ -16,3 +18,11 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CosmosApiGateway}/*/GET/site-config
+
+  GetCategoriesPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GetCategoriesFunctionArn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CosmosApiGateway}/*/GET/categories

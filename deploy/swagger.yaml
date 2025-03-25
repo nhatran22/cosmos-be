@@ -4,14 +4,16 @@ info:
   version: 0.0.1
 
 tags:
-  - name: Profile
-    description: Everything about logged-in user
+  - name: Site Configuration
+    description: Everything about site configuration
+  - name: Category
+    description: Everything about category
 
 paths:
   /site-config:
     get:
       tags:
-        - Auth
+        - Site Configuration
       operationId: GetSiteConfigFunction
       summary: Get site config
       description: Get site config information
@@ -64,6 +66,70 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunction.Outputs.GetSiteConfigFunctionArn}/invocations
 
+  /categories:
+    get:
+      tags:
+        - Auth
+      operationId: GetCategoriesFunction
+      summary: Get Categories
+      description: Get Categories
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Category ID
+                        name:
+                          type: string
+                          description: Category name
+                        description:
+                          type: string
+                          description: Category description
+                        image:
+                          type: string
+                          description: Category preview image
+                        subCategory:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                description: Category ID
+                              name:
+                                type: string
+                                description: Category name
+                              description:
+                                type: string
+                                description: Category description
+                              image:
+                                type: string
+                                description: Category preview image
+        "400":
+          description: Error operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ParameterError"
+                  - $ref: "#/components/schemas/InternalError"
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        passthroughBehavior: when_no_templates
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunctions.Outputs.GetCategoriesFunctionArn}/invocations
+
 components:
   schemas:
     # Success Schemas
@@ -111,13 +177,6 @@ components:
           type: string
           example: Internal error
     # End Error Schemas
-
-    ExclusiveStartKey:
-      in: query
-      name: exclusiveStartKey
-      schema:
-        type: string
-        description: Exclusive start key
 
   securitySchemes:
     api_key:

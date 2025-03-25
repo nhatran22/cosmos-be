@@ -29,6 +29,43 @@ Resources:
                 Resource:
                   - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SiteConfig
 
+  GetCategoriesRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GetCategoriesRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: DynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:Scan
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Category
+        - PolicyName: S3Policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:getObject
+                Resource:
+                  - !Sub arn:aws:s3:::cosmos-system-images/*
+
 Outputs:
   GetSiteConfigRoleArn:
     Value: !GetAtt GetSiteConfigRole.Arn
+  GetCategoriesRoleArn:
+    Value: !GetAtt GetCategoriesRole.Arn

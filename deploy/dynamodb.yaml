@@ -14,3 +14,15 @@ Resources:
         - AttributeName: code
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+
+  CategoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Category
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
