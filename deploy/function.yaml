@@ -20,7 +20,6 @@ Globals:
     Environment:
       Variables:
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-        BUCKET_REGION: ap-southeast-1
 
 Resources:
   GetSiteConfigFunction:
@@ -42,7 +41,7 @@ Resources:
       Environment:
         Variables:
           CATEGORY_TABLE_NAME: Category
-          COSMOS_SYSTEM_IMAGES_BUCKET_NAME: cosmos-system-images
+          COSMOS_SYSTEM_IMAGES_BUCKET_NAME: cosmos-be-images
 
 Outputs:
   GetSiteConfigFunctionArn:
