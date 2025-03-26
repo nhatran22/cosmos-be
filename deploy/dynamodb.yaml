@@ -27,7 +27,7 @@ Resources:
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
 
-  CategoryTable:
+  ProductTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: Product
