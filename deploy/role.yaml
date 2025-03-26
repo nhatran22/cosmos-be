@@ -62,10 +62,47 @@ Resources:
                 Action:
                   - s3:getObject
                 Resource:
-                  - !Sub arn:aws:s3:::cosmos-system-images/*
+                  - !Sub arn:aws:s3:::cosmos-be-resources/*
+
+  GetProductsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GetProductsRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: DynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:Query
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Product
+        - PolicyName: S3Policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:getObject
+                Resource:
+                  - !Sub arn:aws:s3:::cosmos-be-resources/*
 
 Outputs:
   GetSiteConfigRoleArn:
     Value: !GetAtt GetSiteConfigRole.Arn
   GetCategoriesRoleArn:
     Value: !GetAtt GetCategoriesRole.Arn
+  GetProductsRoleArn:
+    Value: !GetAtt GetProductsRole.Arn

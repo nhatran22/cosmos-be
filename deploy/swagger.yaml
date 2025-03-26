@@ -81,7 +81,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  data: 
+                  data:
                     type: array
                     items:
                       type: object
@@ -129,6 +129,60 @@ paths:
         passthroughBehavior: when_no_templates
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunctions.Outputs.GetCategoriesFunctionArn}/invocations
+
+  /products:
+    get:
+      tags:
+        - Auth
+      operationId: GetProductsFunction
+      summary: GetProducts
+      description: GetProducts
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: string
+          description: |
+            Filter products by category
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Product ID
+                        name:
+                          type: string
+                          description: Product name
+                        image:
+                          type: string
+                          description: Product image url
+                        categoryId:
+                          type: string
+                          description: Product category ID
+        "400":
+          description: Error operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ParameterError"
+                  - $ref: "#/components/schemas/InternalError"
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        passthroughBehavior: when_no_templates
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunctions.Outputs.GetProductsFunctionArn}/invocations
 
 components:
   schemas:

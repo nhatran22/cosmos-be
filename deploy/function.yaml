@@ -7,6 +7,8 @@ Parameters:
     Type: String
   GetCategoriesRoleArn:
     Type: String
+  GetProductsRoleArn:
+    Type: String
 
 Globals:
   Function:
@@ -39,10 +41,23 @@ Resources:
       Environment:
         Variables:
           CATEGORY_TABLE_NAME: Category
-          COSMOS_SYSTEM_IMAGES_BUCKET_NAME: cosmos-be-images
+          COSMOS_SYSTEM_RESOURCES_BUCKET_NAME: cosmos-be-resources
+
+  GetProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: GetProductsFunction
+      CodeUri: ../dist/GetProducts/
+      Role: !Ref GetProductsRoleArn
+      Environment:
+        Variables:
+          PRODUCT_TABLE_NAME: Product
+          COSMOS_SYSTEM_RESOURCES_BUCKET_NAME: cosmos-be-resources
 
 Outputs:
   GetSiteConfigFunctionArn:
     Value: !GetAtt GetSiteConfigFunction.Arn
   GetCategoriesFunctionArn:
     Value: !GetAtt GetCategoriesFunction.Arn
+  GetProductsFunctionArn:
+    Value: !GetAtt GetProductsFunction.Arn
