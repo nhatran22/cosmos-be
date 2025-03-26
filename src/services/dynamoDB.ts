@@ -15,7 +15,7 @@ import {
   ScanCommandOutput,
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { defaultTo } from "lodash";
 
 export default class DynamoDBBase<
@@ -43,11 +43,11 @@ export default class DynamoDBBase<
         ...options,
       })
     );
-    if (!result) {
+    if (!result.Item) {
       return null;
     }
 
-    return marshall(result.Item) as M;
+    return result.Item as M;
   }
 
   async query(options: QueryOptions): Promise<ResultListResponse<M>> {
