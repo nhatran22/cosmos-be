@@ -15,7 +15,7 @@ import {
   ScanCommandOutput,
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { defaultTo } from "lodash";
 
 export default class DynamoDBBase<
@@ -51,6 +51,11 @@ export default class DynamoDBBase<
   }
 
   async query(options: QueryOptions): Promise<ResultListResponse<M>> {
+    if (options.ExpressionAttributeValues) {
+      options.ExpressionAttributeValues = marshall(
+        options.ExpressionAttributeValues
+      );
+    }
     const result = await this.ddbDocClient.send(
       new QueryCommand({
         TableName: this.tableName,
