@@ -8,6 +8,8 @@ tags:
     description: Everything about site configuration
   - name: Category
     description: Everything about category
+  - name: Product
+    description: Everything about product
 
 paths:
   /site-config:
@@ -133,7 +135,7 @@ paths:
   /products:
     get:
       tags:
-        - Auth
+        - Product
       operationId: GetProductsFunction
       summary: GetProducts
       description: GetProducts
@@ -184,6 +186,104 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunctions.Outputs.GetProductsFunctionArn}/invocations
 
+  /products/{productId}:
+    get:
+      tags:
+        - Product
+      operationId: GetProductFunction
+      summary: GetProduct
+      description: GetProduct
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: Product ID
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Product ID
+                  name:
+                    type: string
+                    description: Product name
+                  image:
+                    type: string
+                    description: Product image url
+                  description:
+                    type: string
+                    description: Product description
+                  powerRange:
+                    type: string
+                    description: Product power range
+                  gridSystem:
+                    type: string
+                    nullable: true
+                    description: Product grid system
+                  workingWay:
+                    type: string
+                    nullable: true
+                    description: Product working way
+                  suitableArea:
+                    type: string
+                    description: Product suitable area
+                  catalogue:
+                    type: string
+                    description: Product catalogue url
+                  performanceCharacteristics:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        icon:
+                          type: string
+                          description: Performance characteristic icon
+                        title:
+                          type: string
+                          description: Performance characteristic title
+                        description:
+                          type: string
+                          description: Performance characteristic description
+                  diagrams:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        icon:
+                          type: string
+                          description: Diagram icon
+                        title:
+                          type: string
+                          description: Diagram title
+                        description:
+                          type: string
+                          description: Diagram description
+                  categoryId:
+                    type: string
+                    description: Product category ID
+        "400":
+          description: Error operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ParameterError"
+                  - $ref: "#/components/schemas/DataNotFound"
+                  - $ref: "#/components/schemas/InternalError"
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        passthroughBehavior: when_no_templates
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CosmosFunctions.Outputs.GetProductFunctionArn}/invocations
+
 components:
   schemas:
     # Success Schemas
@@ -209,8 +309,8 @@ components:
           type: string
           example: Parameter error
 
-    WrongUsernamePassword:
-      description: Username or Password is wrong
+    DataNotFound:
+      description: Data not found
       type: object
       properties:
         errorCode:
@@ -218,7 +318,7 @@ components:
           example: 20
         errorMessage:
           type: string
-          example: Username or Password is wrong
+          example: Data not found
 
     InternalError:
       description: Internal error
