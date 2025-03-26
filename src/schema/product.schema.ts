@@ -33,7 +33,9 @@ export const ProductSchema = Type.Object({
   image: Type.String({
     transform: ["trim"],
   }),
-  description: Type.String({}),
+  description: Type.String({
+    transform: ["trim"],
+  }),
   powerRange: Type.String({
     transform: ["trim"],
   }),
@@ -52,7 +54,7 @@ export const ProductSchema = Type.Object({
   }),
   performanceCharacteristics: Type.Array(PerformanceCharacteristic),
   diagrams: Type.Array(Diagram),
-  catalogueUrl: Type.String({
+  catalogue: Type.String({
     transform: ["trim"],
   }),
   categoryId: Type.String(),

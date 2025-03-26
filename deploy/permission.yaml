@@ -11,6 +11,8 @@ Parameters:
     Type: String
   GetProductsFunctionArn:
     Type: String
+  GetProductFunctionArn:
+    Type: String
 
 Resources:
   GetSiteConfigPermission:
@@ -36,3 +38,11 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CosmosApiGateway}/*/GET/products
+
+  GetProductPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GetProductFunctionArn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CosmosApiGateway}/*/GET/products/*

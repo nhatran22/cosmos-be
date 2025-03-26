@@ -32,7 +32,7 @@ const GetCategories = async (): Promise<ResponsePayload> => {
     for (const category of categories) {
       if (category.image) {
         category.image = await s3Service.getDownloadSignedUrl(
-          S3_BUCKET.IMAGE_BUCKET,
+          S3_BUCKET.RESOURCES_BUCKET,
           category.image
         );
       }

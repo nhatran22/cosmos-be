@@ -43,19 +43,22 @@ const GetProducts = async (
   async function getProducts(
     params: RequestParams
   ): Promise<ResultListResponse<ProductModel>> {
-    let queryParams: QueryOptions = {};
     if (params.queryStringParameters?.categoryId) {
-      queryParams = {
-        ...queryParams,
+      const queryParams: QueryOptions = {
         IndexName: "categoryId-index",
         KeyConditionExpression: "categoryId = :categoryId",
         ExpressionAttributeValues: {
           ":categoryId": params.queryStringParameters.categoryId,
         },
       };
+      return productRepository.query(queryParams);
+    } else {
+      const results = await productRepository.scanAll();
+      return {
+        items: results,
+        lastEvaluatedKey: null,
+      };
     }
-    const products = await productRepository.query(queryParams);
-    return products;
   }
 
   async function addPresignedUrlForResource(
@@ -64,7 +67,7 @@ const GetProducts = async (
     for (const item of items) {
       if (item.image) {
         item.image = await s3Service.getDownloadSignedUrl(
-          S3_BUCKET.IMAGE_BUCKET,
+          S3_BUCKET.RESOURCES_BUCKET,
           item.image
         );
       }
