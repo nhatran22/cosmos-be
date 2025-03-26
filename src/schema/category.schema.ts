@@ -18,8 +18,6 @@ export const CategorySchema = Type.Object({
   name: Type.String({
     transform: ["trim"],
   }),
-  description: Type.String(),
-  image: Type.String(),
   subCategory: Type.Array(SubCategorySchema, {
     $id: "SubCategorySchema",
   }),
