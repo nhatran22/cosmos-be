@@ -128,6 +128,7 @@ export const responseMiddleWare = (
     request
   ): Promise<void> => {
     const { error } = request;
+    console.log(error);
     schema = Type.Object({}, { additionalProperties: true });
     const stringify = fastJsonStringify(schema, {
       ajv: {

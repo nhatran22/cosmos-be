@@ -90,6 +90,7 @@ Resources:
                   - dynamodb:Scan
                 Resource:
                   - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Product
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Product/index/*
         - PolicyName: S3Policy
           PolicyDocument:
             Version: 2012-10-17
